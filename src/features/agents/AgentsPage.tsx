@@ -3,25 +3,74 @@ import { Card } from '../../components/Card';
 import { DataTable } from '../../components/DataTable';
 import { SectionHeader } from '../../components/SectionHeader';
 import { StatusBadge } from '../../components/StatusBadge';
-import { getAgents } from '../../services/mockApi';
+import AgentStatusCard from '../../components/AgentStatusCard';
+import TestN8n from '../../components/TestN8n';
+import { getAgents, runAgentTask, toggleAgentStatus } from '../../services/mockApi';
 import { Agent } from '../../types/domain';
 
 export function AgentsPage() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selected, setSelected] = useState<Agent | null>(null);
+  const [isMutating, setIsMutating] = useState(false);
+
+  const loadAgents = async () => {
+    const nextAgents = await getAgents();
+    setAgents(nextAgents);
+
+    if (selected) {
+      const nextSelected = nextAgents.find((agent) => agent.id === selected.id) ?? null;
+      setSelected(nextSelected);
+    }
+  };
 
   useEffect(() => {
-    getAgents().then(setAgents);
+    loadAgents().catch((error) => {
+      console.error('Failed to load agents', error);
+    });
   }, []);
+
+  const handleToggle = async (id: string) => {
+    setIsMutating(true);
+    try {
+      await toggleAgentStatus(id);
+      await loadAgents();
+    } finally {
+      setIsMutating(false);
+    }
+  };
+
+  const handleRun = async (id: string) => {
+    setIsMutating(true);
+    try {
+      await runAgentTask(id);
+      await loadAgents();
+    } finally {
+      setIsMutating(false);
+    }
+  };
 
   return (
     <>
       <SectionHeader title="AI Agents & Bots" description="Monitor and register AI agents, n8n workflows and automation bots." />
+      <Card title="Agent status test">
+        <AgentStatusCard />
+      </Card>
+      <Card title="n8n webhook test">
+        <TestN8n />
+      </Card>
       <Card title="Agent registry">
         <DataTable
           rows={agents}
           columns={[
-            { key: 'name', header: 'Name', render: (agent: Agent) => <button className="text-sky-300 underline-offset-2 hover:underline" onClick={() => setSelected(agent)}>{agent.name}</button> },
+            {
+              key: 'name',
+              header: 'Name',
+              render: (agent: Agent) => (
+                <button className="text-sky-300 underline-offset-2 hover:underline" onClick={() => setSelected(agent)}>
+                  {agent.name}
+                </button>
+              )
+            },
             { key: 'type', header: 'Type', render: (agent: Agent) => agent.type },
             { key: 'status', header: 'Status', render: (agent: Agent) => <StatusBadge status={agent.status} /> },
             { key: 'owner', header: 'Owner', render: (agent: Agent) => agent.owner },
@@ -45,7 +94,22 @@ export function AgentsPage() {
             <p>Endpoint: {selected.configSummary.endpoint}</p>
             <p>Scopes: {selected.configSummary.scopes.join(', ')}</p>
           </div>
-          <button className="mt-4 rounded bg-sky-600 px-3 py-2 text-sm">Toggle enable/disable</button>
+          <div className="mt-4 flex gap-2">
+            <button
+              className="rounded bg-sky-600 px-3 py-2 text-sm disabled:opacity-50"
+              onClick={() => handleToggle(selected.id)}
+              disabled={isMutating}
+            >
+              {selected.status === 'online' ? 'Pause' : 'Enable'}
+            </button>
+            <button
+              className="rounded border border-border px-3 py-2 text-sm disabled:opacity-50"
+              onClick={() => handleRun(selected.id)}
+              disabled={isMutating}
+            >
+              Run now
+            </button>
+          </div>
         </div>
       )}
     </>

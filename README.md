@@ -1,17 +1,46 @@
-# Mission Control Dashboard (Scaffold)
+# Mission Control Dashboard
 
-React + TypeScript + Tailwind scaffold for a modular Mission Control UI.
+React + TypeScript + Tailwind frontend with a lightweight Node API backend.
+
+## Run locally
+
+1. Start the backend API:
+
+```bash
+npm run dev:api
+```
+
+2. Start the frontend (new terminal):
+
+```bash
+npm run dev
+```
+
+Frontend runs on `http://localhost:5173` and proxies `/api` to `http://localhost:4000`.
 
 ## Architecture
 
-- `src/layout`: shell components (`Sidebar`, `Topbar`, `AppShell`).
-- `src/components`: reusable UI building blocks (`Card`, `SectionHeader`, `StatusBadge`, `KpiTile`, `DataTable`).
-- `src/features/*`: one feature module per section.
-- `src/types/domain.ts`: shared domain interfaces (`Task`, `ContentItem`, `SecurityIssue`, `Agent`, `TokenUsageSummary`, `Metric`).
-- `src/services/mockApi.ts`: asynchronous mocked data services for future API replacement.
-- `src/config/navigation.ts`: configuration-driven route navigation metadata.
+- `src/layout`: shell components (`Sidebar`, `Topbar`, `AppShell`)
+- `src/components`: reusable UI building blocks (`Card`, `SectionHeader`, `StatusBadge`, `KpiTile`, `DataTable`)
+- `src/features/*`: feature modules for each section
+- `src/types/domain.ts`: shared domain interfaces
+- `src/services/mockApi.ts`: frontend API client (now real HTTP calls)
+- `server/index.js`: API routes and HTTP server
+- `server/store.js`: in-memory domain state and mutation helpers
 
-## Extending
+## Backend endpoints
 
-- Replace methods in `src/services/mockApi.ts` with HTTP calls to n8n, agent registry, SIEM/RMM, and token logs.
-- Keep feature pages focused on display and state; data shape is centralized in `src/types/domain.ts`.
+- `GET /api/overview`
+- `GET /api/tasks`
+- `GET /api/content`
+- `POST /api/content`
+- `GET /api/security`
+- `GET /api/agents`
+- `POST /api/agents/:id/toggle`
+- `POST /api/agents/:id/run`
+- `GET /api/tokens`
+- `GET /api/business-metrics`
+
+## Integrating your real agents/bots
+
+Replace the in-memory logic in `server/store.js` with calls to your agent registry, n8n workflows, and bot runtimes. Keep the same response shape to avoid frontend changes.
