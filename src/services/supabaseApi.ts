@@ -14,12 +14,22 @@ export function useWorkflows() {
   })
 }
 
-// Create workflow (for "New Workflow" button)
+// Create workflow (FIXED VERSION)
 export function useCreateWorkflow() {
   const queryClient = useQueryClient()
+
   return useMutation({
-    mutationFn: (newWorkflow: { name: string; status: string }) => 
-      supabase.from('workflows').insert(newWorkflow).select(),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['workflows'] })
+    mutationFn: async (newWorkflow: { name: string; status: string }) => {
+      const { data, error } = await supabase
+        .from('workflows')
+        .insert(newWorkflow)
+        .select()
+
+      if (error) throw error
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['workflows'] })
+    }
   })
 }
