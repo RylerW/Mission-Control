@@ -1,4 +1,4 @@
-import { useWorkflows, useCreateWorkflow } from '../services/supabaseApi'
+import { useWorkflows, useCreateWorkflow } from '../../services/supabaseApi'
 
 export default function WorkflowsGrid() {
   const workflowsQuery = useWorkflows()
