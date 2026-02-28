@@ -1,6 +1,6 @@
-import { useWorkflows, useCreateWorkflow } from '../../services/supabaseApi'
+import { useWorkflows, useCreateWorkflow } from '@/services/supabaseApi'
 
-export default function WorkflowsGrid() {
+export function SecurityPage() {
   const workflowsQuery = useWorkflows()
   const createMutation = useCreateWorkflow()
 
@@ -14,6 +14,8 @@ export default function WorkflowsGrid() {
 
   return (
     <div>
+      <h2>Workflow Test (Supabase)</h2>
+
       <button
         onClick={() =>
           createMutation.mutate({
