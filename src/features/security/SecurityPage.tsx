@@ -1,10 +1,12 @@
-import { useWorkflows, useCreateWorkflow } from '@/services/supabaseApi'
+import { useWorkflows } from "@/services/supabaseApi"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Shield, Plus } from "lucide-react"
 
-export default function Security({ workflows }) {
+export default function SecurityPage() {
+  const { data: workflows = [], isLoading } = useWorkflows()
+
   return (
     <div className="p-8 space-y-6">
       
@@ -26,9 +28,14 @@ export default function Security({ workflows }) {
         </Button>
       </div>
 
+      {/* Loading State */}
+      {isLoading && (
+        <p className="text-muted-foreground">Loading workflows...</p>
+      )}
+
       {/* Workflow Cards */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {workflows.map((workflow) => (
+        {workflows.map((workflow: any) => (
           <Card key={workflow.id} className="hover:shadow-lg transition">
             <CardHeader>
               <CardTitle>{workflow.name}</CardTitle>
