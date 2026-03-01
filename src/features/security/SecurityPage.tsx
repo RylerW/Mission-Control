@@ -33,10 +33,50 @@ export function SecurityPage() {
         <p className="text-muted-foreground">Loading workflows...</p>
       )}
 
+      {/* Stats Row */}
+<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+  <Card className="bg-panel border-border">
+    <CardContent className="p-4">
+      <p className="text-xs text-muted-foreground">Total</p>
+      <p className="text-2xl font-bold">{workflows.length}</p>
+    </CardContent>
+  </Card>
+
+  <Card className="bg-panel border-border">
+    <CardContent className="p-4">
+      <p className="text-xs text-muted-foreground">Active</p>
+      <p className="text-2xl font-bold">
+        {workflows.filter(w => w.status === "active").length}
+      </p>
+    </CardContent>
+  </Card>
+
+  <Card className="bg-panel border-border">
+    <CardContent className="p-4">
+      <p className="text-xs text-muted-foreground">Paused</p>
+      <p className="text-2xl font-bold">
+        {workflows.filter(w => w.status === "paused").length}
+      </p>
+    </CardContent>
+  </Card>
+
+  <Card className="bg-panel border-border">
+    <CardContent className="p-4">
+      <p className="text-xs text-muted-foreground">Failed</p>
+      <p className="text-2xl font-bold">
+        {workflows.filter(w => w.status === "failed").length}
+      </p>
+    </CardContent>
+  </Card>
+</div>
+
       {/* Workflow Cards */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {workflows.map((workflow: any) => (
-          <Card key={workflow.id} className="hover:shadow-lg transition">
+          <Card
+            key={workflow.id}
+            className="bg-panel border-border hover:border-blue-500 hover:shadow-lg transition cursor-pointer"
+          >
             <CardHeader>
               <CardTitle>{workflow.name}</CardTitle>
             </CardHeader>
@@ -44,9 +84,18 @@ export function SecurityPage() {
               <span className="text-sm text-muted-foreground">
                 Created recently
               </span>
-              <Badge variant="secondary">
-                {workflow.status || "active"}
-              </Badge>
+              <Badge
+                variant="secondary"
+                 className={
+                   workflow.status === "active"
+                    ? "bg-green-600/20 text-green-400 border-green-500"
+                    : workflow.status === "failed"
+                    ? "bg-red-600/20 text-red-400 border-red-500"
+                    : "bg-yellow-600/20 text-yellow-400 border-yellow-500"
+               }
+              >
+                  {workflow.status || "active"}
+                  </Badge>
             </CardContent>
           </Card>
         ))}
