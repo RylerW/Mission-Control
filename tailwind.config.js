@@ -6,7 +6,8 @@ export default {
       colors: {
         surface: '#101727',
         panel: '#172236',
-        border: '#263249'
+        border: '#263249',
+         darkMode: ["class"]
       }
     }
   },
