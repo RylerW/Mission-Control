@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Shield, Plus } from "lucide-react"
 
-export default function SecurityPage() {
+export function SecurityPage() {
   const { data: workflows = [], isLoading } = useWorkflows()
 
   return (
